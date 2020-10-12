@@ -33,3 +33,5 @@ xsel
 zathura
 zathura-pdf-mupdf
 github-cli
+xorg-server
+xorg-xinit
