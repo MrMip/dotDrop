@@ -17,6 +17,7 @@ echo "Installing AUR Packages"
 sudo yay -S --needed - < aurpagklist
 
 echo "Cloneing Repo(s)"
+cd ~
 i=0
 while [ $i <= ${REPOS[@]} ]; do
     git clone https://github.com/$GITUSERNAME/${REPOS[$i]}.git
