@@ -1,26 +1,38 @@
 #!/bin/bash 
 
-#Settings
-AURHELPER="yay"
-GITUSERNAME="MrMip"
-REPOS=(dotfiles dwm)
+PROFILE="artix-main"
+
+#Vars
+DISTRO=$(cat $PROFILE/distro)
+if [ $DISTRO = "arch" ]; then
+    AURHELPER=$(cat $PROFILE/aurhelper)
+    PKG="pacman"
+    ARCH=true
+else
+    ARCH=false
+fi
+DOTFILEREPO=$(cat $PROFILE/dotfilerepo)
 
 echo "Installing Packages"
-sudo pacman -S --needed - < pagklist
+if [ $ARCH ];then
+    sudo pacman -S --needed - < pagklist
+else
+    echo "Your distro is not yet supported, or you have a typo who knows?"
 
-echo "Installing AUR Helper"
-git clone https://aur.archlinux.org/$AURHELPER.git
-cd yay
-makepkg -si
-cd .. && rm -rf yay
-echo "Installing AUR Packages"
-sudo yay -S --needed - < aurpagklist
+if [ $ARCH ]; then
+    echo "Installing AUR Helper"
+    git clone https://aur.archlinux.org/$AURHELPER.git
+    cd yay
+    makepkg -si
+    cd .. && rm -rf yay
+    echo "Installing AUR Packages"
+    sudo $AURHELPER -S --needed - < aurpagklist
+fi
 
-echo "Cloneing Repo(s)"
+echo "Cloneing Dotfiles"
 cd ~
-i=0
-while [ $i <= ${REPOS[@]} ]; do
-    git clone https://github.com/$GITUSERNAME/${REPOS[$i]}.git
-    $i=$(expr $i + 1)  
-done
+git clone $DOTFILEREPO
 
+echo "Starting Postrunscript"
+chmod +x $PROFILE/postrunscript.sh
+exec $PROFILE/postrunscript.sh
